@@ -1,0 +1,63 @@
+CREATE TABLE [Person].[BusinessEntityAddress] (
+    [BusinessEntityID] INT              NOT NULL,
+    [AddressID]        INT              NOT NULL,
+    [AddressTypeID]    INT              NOT NULL,
+    [rowguid]          UNIQUEIDENTIFIER ROWGUIDCOL NOT NULL,
+    [ModifiedDate]     DATETIME         NOT NULL
+);
+GO
+
+EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'Primary key. Foreign key to BusinessEntity.BusinessEntityID.', @level0type = N'SCHEMA', @level0name = N'Person', @level1type = N'TABLE', @level1name = N'BusinessEntityAddress', @level2type = N'COLUMN', @level2name = N'BusinessEntityID';
+GO
+
+EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'Primary key. Foreign key to Address.AddressID.', @level0type = N'SCHEMA', @level0name = N'Person', @level1type = N'TABLE', @level1name = N'BusinessEntityAddress', @level2type = N'COLUMN', @level2name = N'AddressID';
+GO
+
+EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'Primary key. Foreign key to AddressType.AddressTypeID.', @level0type = N'SCHEMA', @level0name = N'Person', @level1type = N'TABLE', @level1name = N'BusinessEntityAddress', @level2type = N'COLUMN', @level2name = N'AddressTypeID';
+GO
+
+EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'ROWGUIDCOL number uniquely identifying the record. Used to support a merge replication sample.', @level0type = N'SCHEMA', @level0name = N'Person', @level1type = N'TABLE', @level1name = N'BusinessEntityAddress', @level2type = N'COLUMN', @level2name = N'rowguid';
+GO
+
+EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'Date and time the record was last updated.', @level0type = N'SCHEMA', @level0name = N'Person', @level1type = N'TABLE', @level1name = N'BusinessEntityAddress', @level2type = N'COLUMN', @level2name = N'ModifiedDate';
+GO
+
+ALTER TABLE [Person].[BusinessEntityAddress]
+    ADD CONSTRAINT [DF_BusinessEntityAddress_rowguid] DEFAULT (newid()) FOR [rowguid];
+GO
+
+ALTER TABLE [Person].[BusinessEntityAddress]
+    ADD CONSTRAINT [DF_BusinessEntityAddress_ModifiedDate] DEFAULT (getdate()) FOR [ModifiedDate];
+GO
+
+CREATE NONCLUSTERED INDEX [IX_BusinessEntityAddress_AddressID]
+    ON [Person].[BusinessEntityAddress]([AddressID] ASC);
+GO
+
+CREATE NONCLUSTERED INDEX [IX_BusinessEntityAddress_AddressTypeID]
+    ON [Person].[BusinessEntityAddress]([AddressTypeID] ASC);
+GO
+
+CREATE UNIQUE NONCLUSTERED INDEX [AK_BusinessEntityAddress_rowguid]
+    ON [Person].[BusinessEntityAddress]([rowguid] ASC);
+GO
+
+EXECUTE sp_addextendedproperty @name = N'MS_Description', @value = N'Cross-reference table mapping customers, vendors, and employees to their addresses.', @level0type = N'SCHEMA', @level0name = N'Person', @level1type = N'TABLE', @level1name = N'BusinessEntityAddress';
+GO
+
+ALTER TABLE [Person].[BusinessEntityAddress]
+    ADD CONSTRAINT [FK_BusinessEntityAddress_AddressType_AddressTypeID] FOREIGN KEY ([AddressTypeID]) REFERENCES [Person].[AddressType] ([AddressTypeID]);
+GO
+
+ALTER TABLE [Person].[BusinessEntityAddress]
+    ADD CONSTRAINT [FK_BusinessEntityAddress_Address_AddressID] FOREIGN KEY ([AddressID]) REFERENCES [Person].[Address] ([AddressID]);
+GO
+
+ALTER TABLE [Person].[BusinessEntityAddress]
+    ADD CONSTRAINT [FK_BusinessEntityAddress_BusinessEntity_BusinessEntityID] FOREIGN KEY ([BusinessEntityID]) REFERENCES [Person].[BusinessEntity] ([BusinessEntityID]);
+GO
+
+ALTER TABLE [Person].[BusinessEntityAddress]
+    ADD CONSTRAINT [PK_BusinessEntityAddress_BusinessEntityID_AddressID_AddressTypeID] PRIMARY KEY CLUSTERED ([BusinessEntityID] ASC, [AddressID] ASC, [AddressTypeID] ASC);
+GO
+
